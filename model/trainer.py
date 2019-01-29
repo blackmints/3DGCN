@@ -58,7 +58,7 @@ class Trainer(object):
             monitor="val_rmse", mode="min"):
         # 1. Generate CV folder
         now = datetime.now()
-        base_path = "../../result/{}/{}/".format(model, self.hyper["dataset"])
+        base_path = "../result/{}/{}/".format(model, self.hyper["dataset"])
         log_path = base_path
         results = []
 
