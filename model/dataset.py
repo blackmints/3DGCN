@@ -65,16 +65,16 @@ class Dataset(object):
 
     def load_dataset(self, dataset, rotate=0):
         if dataset == "delaney":
-            path, max_atoms, max_number, target_name = "../../data/delaney/delaney.sdf", 0, 0, "target"
+            path, max_atoms, max_number, target_name = "../data/delaney/delaney.sdf", 0, 0, "target"
             self.task = "regression"
         elif dataset == "bace_cla":
-            path, max_atoms, max_number, target_name = "../../data/bace/bace.sdf", 0, 0, "Class"
+            path, max_atoms, max_number, target_name = "../data/bace/bace.sdf", 0, 0, "Class"
             self.task = "binary"
         elif dataset == "bace_reg":
-            path, max_atoms, max_number, target_name = "../../data/bace/bace.sdf", 0, 0, "pIC50"
+            path, max_atoms, max_number, target_name = "../data/bace/bace.sdf", 0, 0, "pIC50"
             self.task = "regression"
         elif dataset == "freesolv":
-            path, max_atoms, max_number, target_name = "../../data/freesolv/freesolv.sdf", 0, 0, "exp"
+            path, max_atoms, max_number, target_name = "../data/freesolv/freesolv.sdf", 0, 0, "exp"
             self.task = "regression"
         else:
             path, max_atoms, max_number, target_name = "", 0, 0, "target"

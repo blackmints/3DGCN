@@ -74,7 +74,7 @@ class Trainer(object):
                             normalize_pos=normalize_pos)
 
             # 4. Callbacks
-            log_path = base_path + "{}_c{}_d{}_l{}_p{}_r{}_a{}_p{}_{}/".format(batch, units_conv, units_dense,
+            log_path = base_path + "{}_c{}_d{}_l{}_p{}_a{}_p{}_{}/".format(batch, units_conv, units_dense,
                                                                                num_layers, pooling,
                                                                                normalize_adj, normalize_pos,
                                                                                now.strftime("%m%d%H"))
