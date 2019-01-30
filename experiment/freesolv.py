@@ -1,6 +1,3 @@
-import os
-
-os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 from model.trainer import Trainer
 
 if __name__ == "__main__":
