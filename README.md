@@ -21,7 +21,7 @@ If you use 3DGCN in your research, please cite:
 ```
 @article{cho2018three,
   title={Three-Dimensionally Embedded Graph Convolutional Network (3DGCN) for Molecule Interpretation},
-  author={Cho, Hyeoncheol and Choi, Insung and others},
+  author={Cho, Hyeoncheol and Choi, Insung},
   journal={arXiv preprint arXiv:1811.09794},
   year={2018}
 }
