@@ -1,6 +1,4 @@
 import keras.backend as K
-import tensorflow as tf
-import functools
 
 
 def std_mae(std=1):
@@ -24,15 +22,3 @@ def std_r2(std=1):
         return 1 - ss_res / (ss_tot + K.epsilon())
 
     return r2
-
-
-def tf_auc(curve="ROC"):
-    @functools.wraps(tf.metrics.auc)
-    def wrapper(self, args, **kwargs):
-        value, update_op = tf.metrics.auc(self, args, curve=curve, summation_method='careful_interpolation', **kwargs)
-        K.get_session().run(tf.local_variables_initializer())
-        with tf.control_dependencies([update_op]):
-            value = tf.identity(value)
-        return value
-
-    return wrapper

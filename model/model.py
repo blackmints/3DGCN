@@ -1,12 +1,13 @@
 from keras.models import Model
-from keras.layers import Input, Dense, Flatten, Dropout
+from keras.layers import Input, Dense, Flatten, Dropout, TimeDistributed, Concatenate, Add
 from keras.optimizers import Adam
 from keras.regularizers import l2
 from model.layer import *
-from model.loss import std_mae, std_rmse
+from model.loss import std_mae, std_rmse, masked_binary_crossentropy
 
 
-def arxiv_model(hyper):
+def model_3DGCN(hyper):
+    # Kipf adjacency, neighborhood mixing
     num_atoms = hyper["num_atoms"]
     num_features = hyper["num_features"]
     units_conv = hyper["units_conv"]
@@ -17,31 +18,32 @@ def arxiv_model(hyper):
     task = hyper["task"]
     pooling = hyper["pooling"]
     outputs = hyper["outputs"]
-    normalize_adj = hyper["normalize_adj"]
-    normalize_pos = hyper["normalize_pos"]
 
     atoms = Input(name='atom_inputs', shape=(num_atoms, num_features))
     adjms = Input(name='adjm_inputs', shape=(num_atoms, num_atoms))
     dists = Input(name='coor_inputs', shape=(num_atoms, num_atoms, 3))
 
-    sc, vc = GraphEmbed()([atoms, adjms, dists])
-    ad, di = GraphNormalize(normalize_adj=normalize_adj, normalize_pos=normalize_pos)([adjms, dists])
+    sc, vc = GraphEmbed()([atoms, dists])
 
     for _ in range(num_layers):
-        sc_s = GraphSToS(units_conv, activation='relu')([sc, adjms])
-        sc_v = GraphVToS(units_conv, activation='relu')([vc, di])
+        sc_s = GraphSToS(units_conv, activation='relu')(sc)
+        sc_v = GraphVToS(units_conv, activation='relu')([vc, dists])
 
-        vc_s = GraphSToV(units_conv, activation='relu')([sc, di])
-        vc_v = GraphVToV(units_conv, activation='relu')([vc, adjms])
+        vc_s = GraphSToV(units_conv, activation='tanh')([sc, dists])
+        vc_v = GraphVToV(units_conv, activation='tanh')(vc)
 
-        sc = GraphConvS(units_conv, pooling=pooling, activation='relu')([sc_s, sc_v, ad])
-        vc = GraphConvV(units_conv, pooling=pooling, activation='relu')([vc_s, vc_v, ad])
+        sc = GraphConvS(units_conv, pooling='sum', activation='relu')([sc_s, sc_v, adjms])
+        vc = GraphConvV(units_conv, pooling='sum', activation='tanh')([vc_s, vc_v, adjms])
 
-    out = GraphGatherSV(pooling=pooling)([sc, vc])
-    out = Flatten()(out)
-    out = Dense(units_dense, activation='relu', kernel_regularizer=l2(0.005))(out)
-    out = Dropout(0.5)(out)
-    out = Dense(units_dense, activation='relu', kernel_regularizer=l2(0.005))(out)
+    sc, vc = GraphGather(pooling=pooling)([sc, vc])
+    sc_out = Dense(units_dense, activation='relu', kernel_regularizer=l2(0.005))(sc)
+    sc_out = Dense(units_dense, activation='relu', kernel_regularizer=l2(0.005))(sc_out)
+
+    vc_out = TimeDistributed(Dense(units_dense, activation='relu', kernel_regularizer=l2(0.005)))(vc)
+    vc_out = TimeDistributed(Dense(units_dense, activation='relu', kernel_regularizer=l2(0.005)))(vc_out)
+    vc_out = Flatten()(vc_out)
+
+    out = Concatenate(axis=-1)([sc_out, vc_out])
 
     if task == "regression":
         out = Dense(outputs, activation='linear', name='output')(out)
@@ -59,4 +61,3 @@ def arxiv_model(hyper):
         raise ValueError("Unsupported task on model generation.")
 
     return model
-
