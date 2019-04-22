@@ -1,6 +1,6 @@
 # 3DGCN: Three-Dimensionally Embedded Graph Convolutional Network
 
-This is a Keras implementation of Three-Dimensionally Embedded Graph Convolutional Network for interpreting spatial topology of molecules in our paper:
+This is a implementation of our paper "Three-Dimensionally Embedded Graph Convolutional Network for interpreting spatial topology of molecules":
 
 Hyeoncheol Cho, Insung S. Choi, [Three-Dimensionally Embedded Graph Convolutional Network (3DGCN) for Molecule Interpretation](https://arxiv.org/abs/1811.09794)
 
@@ -11,7 +11,15 @@ Hyeoncheol Cho, Insung S. Choi, [Three-Dimensionally Embedded Graph Convolutiona
 * Keras
 * RDKit
 
-## Demo
+## Datasets
+* FreeSolv
+* ESOL (= delaney)
+* BACE
+* HIV
+
+Note that bace and bace_rotated in the code correspond to BACE_algn and BACE on paper, respectively.
+
+## Experiments
 
 See the `experiment` folder for training and evaluation demos of a 3DGCN model on three datasets.
 
